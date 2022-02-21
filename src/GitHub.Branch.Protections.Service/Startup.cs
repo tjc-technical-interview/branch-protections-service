@@ -18,7 +18,9 @@ public class Startup
     {
         app.UseRouting();
 
-        app.UseEndpoints(endpoints => { endpoints.MapGitHubWebhooks(secret: "some random secret"); });
+        var secret = Configuration["secret"];
+
+        app.UseEndpoints(endpoints => { endpoints.MapGitHubWebhooks(secret: secret); });
     }
 
     public void ConfigureServices(IServiceCollection services)
