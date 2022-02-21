@@ -26,6 +26,8 @@ public class GitHubEvent : WebhookEventProcessor
         };
 
         await _gitHubClient.Repository.Branch.UpdateBranchProtection(repository.Id, repository.DefaultBranch, branchProtectionSettingsUpdate);
+
+        await CreateIssue(repository);
     }
 
     protected override async Task ProcessBranchProtectionRuleWebhookAsync(WebhookHeaders headers, BranchProtectionRuleEvent branchProtectionRuleEvent,
@@ -62,6 +64,16 @@ public class GitHubEvent : WebhookEventProcessor
 
             await ValidateBranchProtections(repository);
         }
+    }
+
+    private async Task CreateIssue(Repository repository)
+    {
+        var newIssue = new NewIssue("Branch Protection Applied");
+
+        newIssue.Body = "@tj-cappelletti, the branch policy has been applied";
+        newIssue.Assignees.Add("tj-cappelletti");
+
+        await _gitHubClient.Issue.Create(repository.Id, newIssue);
     }
 
     private async Task ValidateBranchProtections(Repository repository)
